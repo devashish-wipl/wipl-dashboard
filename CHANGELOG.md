@@ -11,7 +11,7 @@ Format: `[commit-hash] — date — summary`, followed by details.
 
 ---
 
-## [pending] — 2026-04-11 — Scaffold project + Feature 1 (Ticket Table) + Database Browser
+## [dc1fbaa] — 2026-04-11 — Scaffold project + Feature 1 (Ticket Table) + Database Browser
 
 ### Added
 - `index.html` — Vite entry point, page title set to "WIPL Ticket Intelligence Dashboard"
@@ -47,7 +47,39 @@ Format: `[commit-hash] — date — summary`, followed by details.
 - `VITE_SLACK_CHANNEL_ID`
 
 ### Not yet built (upcoming)
-- Feature 2: Submit new ticket form + n8n webhook POST + Supabase polling
+- Feature 2: Submit new ticket form + n8n webhook POST + Supabase polling ✅ done in next commit
+- Feature 3: Thread update side panel
+- Feature 4: Suggested response viewer
+- Feature 5: Analytics (metric cards + Recharts charts)
+- Feature 6: RAG knowledge base viewer
+
+---
+
+## [pending] — 2026-04-11 — Feature 2: Submit Ticket form + n8n webhook + Supabase polling
+
+### Added
+- `src/components/SubmitTicket.jsx` — full submit ticket feature:
+  - Form with subject, email, message fields + inline validation
+  - POSTs to `VITE_N8N_WEBHOOK_URL` with `{ subject, message, email }` and `ngrok-skip-browser-warning` header
+  - Uses `AbortController` with 10s timeout — treats timeout as "sent" (expected: n8n hangs on `sendAndWait` Slack node)
+  - Genuine network errors (connection refused) shown as error state
+  - Pipeline step indicator auto-advances through: Send → Jina → RAG → LLM → Slack → DB
+  - Polls `tickets` table every 3s (subject + email + created_at >= submission time) for up to 5 minutes
+  - After ticket found: secondary lookup on `ticket_approvals` (subject + email) to fetch `decision`, `correct_category`, `correct_urgency` — merged onto ticket before display
+  - Success card: shows corrected category/urgency badges (falls back to AI classification if no correction), decision badge (Approved/Rejected/Pending), AI summary, copyable ticket ID, Slack thread link
+  - Timeout state (5 min): shows "Keep checking" button (resets poll window) and "Submit another" option
+  - Error state: shows specific message for unconfigured webhook URL or network failure
+  - Webhook URL warning banner shown if `VITE_N8N_WEBHOOK_URL` still contains placeholder value
+
+### Modified
+- `src/App.jsx` — wired in `SubmitTicket` component; moved Submit Ticket nav item to position 2 (removed "soon" tag); Database moved to position 3
+- `.env` — updated `VITE_N8N_WEBHOOK_URL` and `VITE_N8N_THREAD_WEBHOOK_URL` with live ngrok URL (not committed — .gitignore)
+
+### Bug fixes
+- Decision badge showed empty on success card — `decision` is not written to `tickets` table by n8n (only to `ticket_approvals`); fixed by secondary lookup + "Pending" fallback
+- Success card content clipped at bottom — fixed by changing `py-8` to `pt-8 pb-16` on scroll container
+
+### Not yet built (upcoming)
 - Feature 3: Thread update side panel
 - Feature 4: Suggested response viewer
 - Feature 5: Analytics (metric cards + Recharts charts)

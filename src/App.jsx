@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import TicketTable from './components/TicketTable'
 import DatabaseBrowser from './components/DatabaseBrowser'
+import SubmitTicket from './components/SubmitTicket'
 
 const NAV_ITEMS = [
   { id: 'tickets',  label: 'Tickets',        icon: TicketIcon },
+  { id: 'submit',   label: 'Submit Ticket',   icon: PlusIcon },
   { id: 'database', label: 'Database',        icon: DatabaseIcon },
-  { id: 'submit',   label: 'Submit Ticket',   icon: PlusIcon,   soon: true },
   { id: 'analytics',label: 'Analytics',       icon: ChartIcon,  soon: true },
   { id: 'rag',      label: 'RAG Knowledge Base', icon: RAGIcon,  soon: true },
 ]
@@ -85,8 +86,9 @@ export default function App() {
         {/* page content */}
         <div className="flex-1 overflow-hidden">
           {activeTab === 'tickets'  && <TicketTable />}
+          {activeTab === 'submit'   && <SubmitTicket />}
           {activeTab === 'database' && <DatabaseBrowser />}
-          {activeTab !== 'tickets' && activeTab !== 'database' && (
+          {activeTab !== 'tickets' && activeTab !== 'submit' && activeTab !== 'database' && (
             <div className="flex items-center justify-center h-full text-gray-600 text-sm">
               Coming soon
             </div>

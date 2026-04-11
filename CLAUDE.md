@@ -4,6 +4,20 @@ This file is the authoritative context document for this project. Read it at the
 
 ---
 
+## Commit Workflow Rule
+
+**Always update `CHANGELOG.md` before committing and pushing.** Every commit must have its entry written in `CHANGELOG.md` first — including the files changed and what was done — before `git commit` is run. The commit message and the changelog entry should describe the same changes. After the commit is made, backfill the real commit hash into the `[pending]` placeholder in the changelog entry.
+
+Correct order:
+1. Make code changes
+2. Write the `[pending]` entry in `CHANGELOG.md` describing those changes
+3. `git add` all changed files including `CHANGELOG.md`
+4. `git commit` with the message
+5. Replace `[pending]` with the real commit hash in `CHANGELOG.md`
+6. `git add CHANGELOG.md && git push`
+
+---
+
 ## What This Project Is
 
 A React-based internal dashboard for **Webspiders Interweb Pvt Ltd (WIPL)**, an IT infrastructure and web hosting company (wiplon.com). It provides a GUI over an existing **n8n automation + Supabase** backend that classifies, approves, and logs customer support tickets.

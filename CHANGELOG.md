@@ -55,7 +55,7 @@ Format: `[commit-hash] — date — summary`, followed by details.
 
 ---
 
-## [pending] — 2026-04-11 — Feature 2: Submit Ticket form + n8n webhook + Supabase polling
+## [af1bc3b] — 2026-04-11 — Feature 2: Submit Ticket form + n8n webhook + Supabase polling
 
 ### Added
 - `src/components/SubmitTicket.jsx` — full submit ticket feature:
@@ -84,3 +84,21 @@ Format: `[commit-hash] — date — summary`, followed by details.
 - Feature 4: Suggested response viewer
 - Feature 5: Analytics (metric cards + Recharts charts)
 - Feature 6: RAG knowledge base viewer
+
+---
+
+## [7ab004a] — 2026-04-11 — Add CLAUDE.md project context file
+
+### Added
+- `CLAUDE.md` — comprehensive project context document covering: project overview, full tech stack, all environment variables, both n8n workflow pipelines with payloads, all 5 Supabase table schemas with column details, Slack URL construction pattern, feature completion status, established code patterns, and known issues/gotchas table
+
+### Modified
+- `CHANGELOG.md` — backfilled commit hash for `af1bc3b` entry
+
+---
+
+## [pending] — 2026-04-11 — Backfill CHANGELOG entries + document commit workflow rule in CLAUDE.md
+
+### Modified
+- `CHANGELOG.md` — backfilled commit hash for `7ab004a`; added this entry before pushing (per commit workflow rule)
+- `CLAUDE.md` — added commit workflow rule: always update CHANGELOG with the commit's changes before committing and pushing

@@ -97,7 +97,7 @@ Format: `[commit-hash] — date — summary`, followed by details.
 
 ---
 
-## [pending] — 2026-04-11 — Backfill CHANGELOG entries + document commit workflow rule in CLAUDE.md
+## [efd2d86] — 2026-04-11 — Backfill CHANGELOG entries + document commit workflow rule in CLAUDE.md
 
 ### Modified
 - `CHANGELOG.md` — backfilled commit hash for `7ab004a`; added this entry before pushing (per commit workflow rule)

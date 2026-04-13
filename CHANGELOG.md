@@ -5,7 +5,14 @@ Format: `[commit-hash] — date — summary`, followed by details.
 
 ---
 
-## [pending] — 2026-04-13 — fix: decision filter, search, groq_errors viewer, connection status, cleanup
+## [pending] — 2026-04-13 — docs: update CLAUDE.md to reflect bf0fa16 changes
+
+### Modified
+- `CLAUDE.md` — Feature 1 description updated: added search and decision-filter workaround notes; Database Browser tab count updated to 4 (groq_errors added); App.jsx file comment updated to mention real health check; Decision field gap pattern updated to describe the pre-fetch workaround; Known Issues row updated to match
+
+---
+
+## [bf0fa16] — 2026-04-13 — fix: decision filter, search, groq_errors viewer, connection status, cleanup
 
 ### Fixed
 - `src/components/TicketTable.jsx` — decision filter was broken (tickets.decision is always null); now pre-fetches matching subjects from ticket_approvals via ilike, then filters tickets with `.in('subject', ...)` so Approved/Rejected filtering actually works

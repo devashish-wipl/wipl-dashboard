@@ -235,7 +235,7 @@ wipl-dashboard/
 └── src/
     ├── main.jsx                # React root
     ├── index.css               # Tailwind directives + scrollbar utilities
-    ├── App.jsx                 # Shell: sidebar nav, top header, tab routing
+    ├── App.jsx                 # Shell: sidebar nav, top header, tab routing; real Supabase health check on mount
     ├── lib/
     │   └── supabase.js         # Supabase client singleton
     └── components/
@@ -247,7 +247,7 @@ wipl-dashboard/
         ├── SuggestedResponsePanel.jsx # Feature 4: suggested response viewer
         ├── Analytics.jsx             # Feature 5: analytics dashboard
         ├── RAGKnowledgeBase.jsx      # Feature 6: RAG knowledge base viewer
-        └── DatabaseBrowser.jsx       # Database viewer (3 tables)
+        └── DatabaseBrowser.jsx       # Database viewer (4 tables: resolved_tickets, ticket_approvals, ticket_suggestions, groq_errors)
 ```
 
 ---
@@ -258,8 +258,10 @@ wipl-dashboard/
 
 **Feature 1 — Ticket Table** (`TicketTable.jsx`)
 - Fetches `tickets` table with server-side filters (category, urgency, decision, date range)
+- Subject/email search input (debounced 350ms) using Supabase `.or('subject.ilike.%X%,email.ilike.%X%')`
+- Decision filter works via a pre-fetch against `ticket_approvals` (since `tickets.decision` is always null) — fetches matching subjects, then filters tickets with `.in('subject', ...)`
 - Pagination: 25/page, sortable by `created_at`
-- Per-row: Slack thread link, Supabase record link, detail side panel
+- Per-row: Slack thread link, Supabase record link, detail side panel, Thread Update panel, Suggested Response panel
 - Detail panel: full message, AI summary, all metadata
 
 **Feature 2 — Submit Ticket** (`SubmitTicket.jsx`)
@@ -272,7 +274,7 @@ wipl-dashboard/
 - Success card with corrected badges, decision, AI summary, copyable ID, Slack link
 
 **Database Browser** (`DatabaseBrowser.jsx`)
-- Tabs: `resolved_tickets`, `ticket_approvals`, `ticket_suggestions`
+- Tabs: `resolved_tickets`, `ticket_approvals`, `ticket_suggestions`, `groq_errors`
 - Subject search (debounced 350ms), pagination, refresh
 - Row detail modal (full untruncated content)
 - `embedding` column excluded from `resolved_tickets` query
@@ -338,7 +340,9 @@ try {
 Always include `ngrok-skip-browser-warning: true` on all n8n webhook requests — without it, ngrok's interstitial page returns HTML instead of passing through to n8n.
 
 ### Decision field gap
-`tickets.decision` is always `null`. The actual decision is in `ticket_approvals.decision`, joined by `subject + email`. This is a known n8n workflow limitation — the `Prepare Tickets Insert` node does not include the decision. Do not try to fix this in the dashboard; fix it in the n8n workflow if it matters.
+`tickets.decision` is always `null`. The actual decision is in `ticket_approvals.decision`, joined by `subject + email`. This is a known n8n workflow limitation — the `Prepare Tickets Insert` node does not include the decision.
+
+The TicketTable decision filter works around this: when a decision filter is active it first queries `ticket_approvals` for matching subjects (`.ilike('decision', value)`), then filters the tickets query with `.in('subject', matchingSubjects)`. This is slightly approximate (same subject from different emails both match) but correct for practical use.
 
 ### Tab routing
 `App.jsx` uses simple `useState` — no React Router. To add a new tab: add an entry to `NAV_ITEMS`, add an icon function, add a conditional render in the content area.
@@ -358,7 +362,7 @@ The ngrok subdomain changes on every restart. When it changes:
 
 | Issue | Location | Notes |
 |---|---|---|
-| `tickets.decision` always null | `tickets` table | Decision only in `ticket_approvals`. SubmitTicket does secondary lookup. TicketTable shows `—` for existing tickets. |
+| `tickets.decision` always null | `tickets` table | Decision only in `ticket_approvals`. SubmitTicket does secondary lookup. TicketTable filter works around this via a pre-fetch against `ticket_approvals` (see Code Patterns). |
 | `ticket_approvals` has no FK to `tickets` | n8n workflow design | All joins must use `subject + email`. Risk of false matches if same subject+email submitted twice. |
 | `ticket_suggestions.ticket_id` may be null briefly | n8n timing | Backfilled after ticket insert. If you query suggestions immediately after ticket creation, `ticket_id` may be null. |
 | ngrok URL changes on restart | `.env` | Both webhook URLs must be updated manually. Dashboard shows a warning banner if placeholder detected. |

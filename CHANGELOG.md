@@ -5,7 +5,14 @@ Format: `[commit-hash] — date — summary`, followed by details.
 
 ---
 
-## [pending] — 2026-04-13 — fix: remove combined_score from RAG Knowledge Base viewer
+## [pending] — 2026-04-13 — docs: mark all features complete in CLAUDE.md
+
+### Modified
+- `CLAUDE.md` — moved Features 3–6 from "Not Yet Built" to "Complete"; updated file structure listing to include all 6 feature components; removed "(upcoming)" from Recharts entry; updated Feature 3 webhook description tense; removed `combined_score` from Feature 6 column list
+
+---
+
+## [a01ac08] — 2026-04-13 — fix: remove combined_score from RAG Knowledge Base viewer
 
 ### Fixed
 - `src/components/RAGKnowledgeBase.jsx` — removed `combined_score` from SELECT query, table columns, row detail modal, and sort options; removed `ScoreBadge` component; changed default sort from `combined_score` to `created_at`; sort options now "Newest" (created_at) and "ID" — `combined_score` was causing a query error

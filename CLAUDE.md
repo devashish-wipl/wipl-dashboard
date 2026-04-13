@@ -33,7 +33,7 @@ The dashboard does **not** have its own backend. All data access goes directly t
 | Frontend framework | React 18 + Vite 6 |
 | Styling | Tailwind CSS 3 (dark theme, `bg-gray-950` base) |
 | Database client | `@supabase/supabase-js` v2 |
-| Charts (upcoming) | Recharts |
+| Charts | Recharts |
 | Dev server | `npm run dev` → `http://localhost:5173` |
 | Build | `npm run build` → `dist/` |
 
@@ -102,7 +102,7 @@ This webhook is used by Slack's interactive components (buttons in ticket thread
 - `view_suggested_reply` button → fetches from `ticket_suggestions` and opens a read-only Slack modal
 - Modal submissions → PATCHes `tickets` table, fetches `thread_ts`, posts reply to Slack thread
 
-**Dashboard feature for this webhook (Feature 3 — not yet built):** Will POST directly from the Thread Update panel with body:
+**Dashboard feature for this webhook (Feature 3):** POSTs directly from the Thread Update panel with body:
 ```json
 {
   "ticket_id": "string",
@@ -239,11 +239,15 @@ wipl-dashboard/
     ├── lib/
     │   └── supabase.js         # Supabase client singleton
     └── components/
-        ├── UrgencyBadge.jsx    # Shared badge — Critical/High/Normal/Low
-        ├── CategoryBadge.jsx   # Shared badge — 5 categories
-        ├── TicketTable.jsx     # Feature 1: ticket list
-        ├── SubmitTicket.jsx    # Feature 2: submit form + polling
-        └── DatabaseBrowser.jsx # Database viewer (3 tables)
+        ├── UrgencyBadge.jsx          # Shared badge — Critical/High/Normal/Low
+        ├── CategoryBadge.jsx         # Shared badge — 5 categories
+        ├── TicketTable.jsx           # Feature 1: ticket list
+        ├── SubmitTicket.jsx          # Feature 2: submit form + polling
+        ├── ThreadUpdatePanel.jsx     # Feature 3: thread update via n8n webhook
+        ├── SuggestedResponsePanel.jsx # Feature 4: suggested response viewer
+        ├── Analytics.jsx             # Feature 5: analytics dashboard
+        ├── RAGKnowledgeBase.jsx      # Feature 6: RAG knowledge base viewer
+        └── DatabaseBrowser.jsx       # Database viewer (3 tables)
 ```
 
 ---
@@ -273,21 +277,19 @@ wipl-dashboard/
 - Row detail modal (full untruncated content)
 - `embedding` column excluded from `resolved_tickets` query
 
-### 🔲 Not Yet Built
-
-**Feature 3 — Thread Update Panel**
+**Feature 3 — Thread Update Panel** (`ThreadUpdatePanel.jsx`)
 - Side panel per ticket
 - Fields: assigned_to, ETA, status dropdown, custom message
 - POST to `VITE_N8N_THREAD_WEBHOOK_URL` with `{ ticket_id, slack_thread_ts, update_type, assigned_to, eta, status, custom_message }`
-- Show confirmation on submit
+- Shows confirmation on submit
 
-**Feature 4 — Suggested Response Viewer**
-- Per ticket, fetch `ticket_suggestions` by `ticket_id`
-- Display `suggested_response` with copy-to-clipboard
-- Display `internal_notes` in a collapsible section
+**Feature 4 — Suggested Response Viewer** (`SuggestedResponsePanel.jsx`)
+- Per ticket, fetches `ticket_suggestions` by `ticket_id`
+- Displays `suggested_response` with copy-to-clipboard
+- Displays `internal_notes` in a collapsible section
 - "No suggestion generated" fallback
 
-**Feature 5 — Analytics**
+**Feature 5 — Analytics** (`Analytics.jsx`)
 - Metric cards: total tickets, approval rate, rejection rate, RAG hit rate
 - Tickets by category — bar chart (Recharts)
 - Tickets by urgency — breakdown
@@ -295,9 +297,9 @@ wipl-dashboard/
 - Average similarity score for RAG-used tickets
 - All computed from Supabase `tickets` + `ticket_approvals` data
 
-**Feature 6 — RAG Knowledge Base Viewer**
+**Feature 6 — RAG Knowledge Base Viewer** (`RAGKnowledgeBase.jsx`)
 - Read-only table from `resolved_tickets` (embedding excluded)
-- Columns: subject, category, urgency, resolution, combined_score
+- Columns: subject, category, urgency, resolution
 - Useful for understanding what's in the vector store
 
 ---

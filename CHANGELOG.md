@@ -5,7 +5,17 @@ Format: `[commit-hash] — date — summary`, followed by details.
 
 ---
 
-## [pending] — 2026-04-13 — feat: add Feature 4 - Suggested Response Viewer panel
+## [pending] — 2026-04-13 — feat: add Feature 5 - Analytics dashboard
+
+### Added
+- `src/components/Analytics.jsx` — full analytics page: 5 metric cards (total tickets, approval rate, rejection rate, RAG hit rate, avg similarity score); tickets by category bar chart with per-category colors; tickets by urgency horizontal bar chart; ticket volume over time line chart; all data fetched from `tickets` + `ticket_approvals` tables; loading/error/empty states per chart
+
+### Modified
+- `src/App.jsx` — imports `Analytics`; removes `soon: true` from analytics nav item; renders `<Analytics />` for the `analytics` tab; updates the fallback "Coming soon" condition to exclude `analytics`
+
+---
+
+## [a618dc2] — 2026-04-13 — feat: add Feature 4 - Suggested Response Viewer panel
 
 ### Added
 - `src/components/SuggestedResponsePanel.jsx` — slide-in side panel that fetches `ticket_suggestions` by `ticket_id` from Supabase; shows `suggested_response` with copy-to-clipboard button; shows `internal_notes` in a collapsible section; handles loading, error, and empty ("no suggestion generated") states

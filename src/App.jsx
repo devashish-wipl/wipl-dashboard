@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import TicketTable from './components/TicketTable'
 import DatabaseBrowser from './components/DatabaseBrowser'
 import SubmitTicket from './components/SubmitTicket'
 import Analytics from './components/Analytics'
 import RAGKnowledgeBase from './components/RAGKnowledgeBase'
+import { supabase } from './lib/supabase'
 
 const NAV_ITEMS = [
   { id: 'tickets',  label: 'Tickets',        icon: TicketIcon },
@@ -15,6 +16,15 @@ const NAV_ITEMS = [
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('tickets')
+  const [dbStatus, setDbStatus] = useState('checking') // 'checking' | 'connected' | 'error'
+
+  useEffect(() => {
+    supabase
+      .from('tickets')
+      .select('id', { count: 'exact', head: true })
+      .then(({ error }) => setDbStatus(error ? 'error' : 'connected'))
+      .catch(() => setDbStatus('error'))
+  }, [])
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-950">
@@ -43,20 +53,15 @@ export default function App() {
             return (
               <button
                 key={item.id}
-                onClick={() => !item.soon && setActiveTab(item.id)}
+                onClick={() => setActiveTab(item.id)}
                 className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left
                   ${active
                     ? 'bg-blue-600/20 text-blue-400'
-                    : item.soon
-                      ? 'text-gray-600 cursor-default'
-                      : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
+                    : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
                   }`}
               >
                 <Icon className="w-4 h-4 shrink-0" />
                 <span className="truncate">{item.label}</span>
-                {item.soon && (
-                  <span className="ml-auto text-[10px] bg-gray-800 text-gray-500 rounded px-1.5 py-0.5 shrink-0">Soon</span>
-                )}
               </button>
             )
           })}
@@ -65,7 +70,7 @@ export default function App() {
         {/* footer */}
         <div className="px-5 py-4 border-t border-gray-800">
           <p className="text-[10px] text-gray-600">Webspiders Interweb Pvt Ltd</p>
-          <p className="text-[10px] text-gray-700">v0.1.0</p>
+          <p className="text-[10px] text-gray-700">v1.0.0</p>
         </div>
       </nav>
 
@@ -80,8 +85,24 @@ export default function App() {
             <p className="text-xs text-gray-500 mt-0.5">Webspiders Interweb Pvt Ltd · n8n + Supabase powered</p>
           </div>
           <div className="flex items-center gap-2 text-xs text-gray-500">
-            <span className="w-2 h-2 rounded-full bg-green-400 inline-block animate-pulse" />
-            Connected to Supabase
+            {dbStatus === 'checking' && (
+              <>
+                <span className="w-2 h-2 rounded-full bg-yellow-400 inline-block animate-pulse" />
+                Connecting…
+              </>
+            )}
+            {dbStatus === 'connected' && (
+              <>
+                <span className="w-2 h-2 rounded-full bg-green-400 inline-block animate-pulse" />
+                Connected to Supabase
+              </>
+            )}
+            {dbStatus === 'error' && (
+              <>
+                <span className="w-2 h-2 rounded-full bg-red-400 inline-block" />
+                <span className="text-red-400">Supabase unreachable</span>
+              </>
+            )}
           </div>
         </header>
 

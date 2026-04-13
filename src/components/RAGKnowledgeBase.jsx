@@ -68,8 +68,6 @@ function RowModal({ row, onClose }) {
                           hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true,
                         })}
                       </p>
-                    ) : f.score ? (
-                      <ScoreBadge value={val} />
                     ) : f.badge === 'category' ? (
                       <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_STYLES[val] ?? 'bg-gray-700/40 text-gray-400'}`}>{val}</span>
                     ) : f.badge === 'urgency' ? (

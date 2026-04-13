@@ -5,7 +5,24 @@ Format: `[commit-hash] — date — summary`, followed by details.
 
 ---
 
-## [pending] — 2026-04-13 — docs: mark all features complete in CLAUDE.md
+## [pending] — 2026-04-13 — fix: decision filter, search, groq_errors viewer, connection status, cleanup
+
+### Fixed
+- `src/components/TicketTable.jsx` — decision filter was broken (tickets.decision is always null); now pre-fetches matching subjects from ticket_approvals via ilike, then filters tickets with `.in('subject', ...)` so Approved/Rejected filtering actually works
+- `src/components/RAGKnowledgeBase.jsx` — removed dead `ScoreBadge` reference (component was deleted in previous commit but the conditional render branch referencing it remained)
+
+### Added
+- `src/components/TicketTable.jsx` — subject/email search input in the filter bar (debounced 350ms); uses Supabase `.or('subject.ilike.%X%,email.ilike.%X%')`; reset clears search alongside filters
+- `src/components/DatabaseBrowser.jsx` — groq_errors table tab added; columns: id, subject, email, error_message, rag_used, failed_at; previously classification failures had no viewer in the dashboard
+
+### Changed
+- `src/App.jsx` — connection status dot now does a real Supabase health check on mount (count query against tickets); shows yellow "Connecting…", green "Connected", or red "Supabase unreachable" instead of hardcoded green
+- `src/App.jsx` — removed `soon` dead code from nav render (no NAV_ITEMS have `soon: true`; the conditional branch and "Soon" badge were unreachable)
+- `src/App.jsx` — version bumped from v0.1.0 to v1.0.0
+
+---
+
+## [d9b817b] — 2026-04-13 — docs: mark all features complete in CLAUDE.md
 
 ### Modified
 - `CLAUDE.md` — moved Features 3–6 from "Not Yet Built" to "Complete"; updated file structure listing to include all 6 feature components; removed "(upcoming)" from Recharts entry; updated Feature 3 webhook description tense; removed `combined_score` from Feature 6 column list

@@ -29,9 +29,26 @@ function formatDate(iso) {
 }
 
 // ── Filter bar ────────────────────────────────────────────────────────────────
-function FilterBar({ filters, onChange, onReset }) {
+function FilterBar({ filters, onChange, onReset, search, onSearchChange }) {
   return (
     <div className="flex flex-wrap items-end gap-3 px-5 py-4 border-b border-gray-800">
+      {/* Subject / email search */}
+      <div className="flex flex-col gap-1">
+        <label className="text-xs text-gray-500 font-medium uppercase tracking-wider">Search</label>
+        <div className="relative">
+          <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Subject or email…"
+            value={search}
+            onChange={e => onSearchChange(e.target.value)}
+            className="bg-gray-800 border border-gray-700 text-gray-200 text-sm rounded-lg pl-8 pr-3 py-1.5 w-48 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-600"
+          />
+        </div>
+      </div>
+
       <div className="flex flex-col gap-1">
         <label className="text-xs text-gray-500 font-medium uppercase tracking-wider">Category</label>
         <select
@@ -240,6 +257,8 @@ export default function TicketTable() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
+  const [search, setSearch] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
   const [page, setPage] = useState(0)
   const [totalCount, setTotalCount] = useState(0)
   const [selectedTicket, setSelectedTicket] = useState(null)
@@ -247,11 +266,34 @@ export default function TicketTable() {
   const [suggestionTicket, setSuggestionTicket] = useState(null)
   const [sortDir, setSortDir] = useState('desc')
 
+  // debounce search input
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), 350)
+    return () => clearTimeout(t)
+  }, [search])
+
   const fetchTickets = useCallback(async () => {
     setLoading(true)
     setError(null)
 
     try {
+      // Decision lives in ticket_approvals, not tickets (tickets.decision is always null).
+      // Pre-fetch matching subjects from ticket_approvals when decision filter is active.
+      let subjectFilter = null
+      if (filters.decision) {
+        const { data: approvals, error: apErr } = await supabase
+          .from('ticket_approvals')
+          .select('subject')
+          .ilike('decision', filters.decision)
+        if (apErr) throw apErr
+        if (!approvals || approvals.length === 0) {
+          setTickets([])
+          setTotalCount(0)
+          return
+        }
+        subjectFilter = [...new Set(approvals.map(a => a.subject).filter(Boolean))]
+      }
+
       let query = supabase
         .from('tickets')
         .select('*', { count: 'exact' })
@@ -260,7 +302,8 @@ export default function TicketTable() {
 
       if (filters.category)  query = query.eq('category', filters.category)
       if (filters.urgency)   query = query.eq('urgency', filters.urgency)
-      if (filters.decision)  query = query.eq('decision', filters.decision)
+      if (subjectFilter)     query = query.in('subject', subjectFilter)
+      if (debouncedSearch)   query = query.or(`subject.ilike.%${debouncedSearch}%,email.ilike.%${debouncedSearch}%`)
       if (filters.dateFrom)  query = query.gte('created_at', filters.dateFrom)
       if (filters.dateTo) {
         // include the full day
@@ -279,19 +322,24 @@ export default function TicketTable() {
     } finally {
       setLoading(false)
     }
-  }, [filters, page, sortDir])
+  }, [filters, debouncedSearch, page, sortDir])
 
   useEffect(() => {
     fetchTickets()
   }, [fetchTickets])
 
-  // reset to page 0 when filters change
+  // reset to page 0 when filters or search change
   useEffect(() => {
     setPage(0)
-  }, [filters])
+  }, [filters, debouncedSearch])
 
   function handleFilterChange(key, value) {
     setFilters(f => ({ ...f, [key]: value }))
+  }
+
+  function handleReset() {
+    setFilters(DEFAULT_FILTERS)
+    setSearch('')
   }
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
@@ -299,7 +347,13 @@ export default function TicketTable() {
   return (
     <div className="flex flex-col h-full">
       {/* filter bar */}
-      <FilterBar filters={filters} onChange={handleFilterChange} onReset={() => setFilters(DEFAULT_FILTERS)} />
+      <FilterBar
+        filters={filters}
+        onChange={handleFilterChange}
+        onReset={handleReset}
+        search={search}
+        onSearchChange={setSearch}
+      />
 
       {/* table area */}
       <div className="flex-1 overflow-auto scrollbar-thin">

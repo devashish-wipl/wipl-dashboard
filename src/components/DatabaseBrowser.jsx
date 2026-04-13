@@ -57,6 +57,21 @@ const TABLES = {
       { key: 'created_at',        label: 'Created',          date: true },
     ],
   },
+  groq_errors: {
+    label: 'groq_errors',
+    description: 'LLM classification failures logged by n8n when the classifier chain errors out',
+    orderBy: 'failed_at',
+    searchColumn: 'subject',
+    selectClause: '*',
+    columns: [
+      { key: 'id',            label: 'ID',        mono: true, truncate: true, maxW: 'max-w-[80px]' },
+      { key: 'subject',       label: 'Subject',   truncate: true, maxW: 'max-w-[200px]' },
+      { key: 'email',         label: 'Email',     truncate: true, maxW: 'max-w-[150px]' },
+      { key: 'error_message', label: 'Error',     truncate: true, maxW: 'max-w-[300px]' },
+      { key: 'rag_used',      label: 'RAG',       boolean: true },
+      { key: 'failed_at',     label: 'Failed at', date: true },
+    ],
+  },
 }
 
 // ── Badge / cell helpers ──────────────────────────────────────────────────────

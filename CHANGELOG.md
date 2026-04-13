@@ -5,7 +5,14 @@ Format: `[commit-hash] — date — summary`, followed by details.
 
 ---
 
-## [pending] — 2026-04-13 — feat: add Feature 6 - RAG Knowledge Base viewer
+## [pending] — 2026-04-13 — fix: remove combined_score from RAG Knowledge Base viewer
+
+### Fixed
+- `src/components/RAGKnowledgeBase.jsx` — removed `combined_score` from SELECT query, table columns, row detail modal, and sort options; removed `ScoreBadge` component; changed default sort from `combined_score` to `created_at`; sort options now "Newest" (created_at) and "ID" — `combined_score` was causing a query error
+
+---
+
+## [073f39b] — 2026-04-13 — feat: add Feature 6 - RAG Knowledge Base viewer
 
 ### Added
 - `src/components/RAGKnowledgeBase.jsx` — read-only viewer for `resolved_tickets` table (embedding excluded); columns: subject, category, urgency, resolution, combined_score; `ScoreBadge` colors score green ≥ 0.5, yellow ≥ 0.1, gray < 0.1; subject search (debounced 350ms); sort toggle between combined_score and created_at; pagination (25/page); row detail modal showing full message + all fields; entry count displayed in header

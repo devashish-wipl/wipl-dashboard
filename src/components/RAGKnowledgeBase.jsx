@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 
 const PAGE_SIZE = 25
-const SELECT = 'id, subject, message, category, urgency, resolution, combined_score, created_at'
+const SELECT = 'id, subject, message, category, urgency, resolution, created_at'
 
 const URGENCY_STYLES = {
   Critical: 'bg-red-500/20 text-red-400 ring-1 ring-red-500/40',
@@ -18,21 +18,6 @@ const CATEGORY_STYLES = {
   General:           'bg-indigo-500/20 text-indigo-400 ring-1 ring-indigo-500/40',
 }
 
-function ScoreBadge({ value }) {
-  if (value == null) return <span className="text-gray-600 text-xs">—</span>
-  const n = Number(value)
-  const display = n.toFixed(4)
-  let style
-  if (n >= 0.5)      style = 'bg-green-500/20 text-green-400 ring-1 ring-green-500/40'
-  else if (n >= 0.1) style = 'bg-yellow-500/20 text-yellow-400 ring-1 ring-yellow-500/40'
-  else               style = 'bg-gray-500/20 text-gray-400 ring-1 ring-gray-500/40'
-  return (
-    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-mono font-medium ${style}`}>
-      {display}
-    </span>
-  )
-}
-
 // ── Row detail modal ──────────────────────────────────────────────────────────
 function RowModal({ row, onClose }) {
   if (!row) return null
@@ -42,7 +27,6 @@ function RowModal({ row, onClose }) {
     { label: 'Subject',        key: 'subject' },
     { label: 'Category',       key: 'category',      badge: 'category' },
     { label: 'Urgency',        key: 'urgency',        badge: 'urgency' },
-    { label: 'Combined Score', key: 'combined_score', score: true },
     { label: 'Resolution',     key: 'resolution' },
     { label: 'Message',        key: 'message' },
     { label: 'Created',        key: 'created_at',    date: true },
@@ -113,7 +97,7 @@ export default function RAGKnowledgeBase() {
   const [totalCount, setTotalCount] = useState(0)
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
-  const [sortBy, setSortBy] = useState('combined_score')
+  const [sortBy, setSortBy] = useState('created_at')
   const [selectedRow, setSelectedRow] = useState(null)
 
   useEffect(() => {
@@ -171,8 +155,8 @@ export default function RAGKnowledgeBase() {
       <div className="flex items-center gap-4 px-5 py-3 border-b border-gray-800 shrink-0">
         <div className="flex items-center gap-2 shrink-0">
           <p className="text-xs text-gray-500">Sort:</p>
-          <SortButton field="combined_score" label="Score" />
-          <SortButton field="created_at" label="Date" />
+          <SortButton field="created_at" label="Newest" />
+          <SortButton field="id" label="ID" />
         </div>
 
         <div className="ml-auto flex items-center gap-2">
@@ -233,7 +217,6 @@ export default function RAGKnowledgeBase() {
                 <th className="px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Category</th>
                 <th className="px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Urgency</th>
                 <th className="px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Resolution</th>
-                <th className="px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap">Score</th>
                 <th className="px-4 py-3 w-10" />
               </tr>
             </thead>
@@ -263,9 +246,6 @@ export default function RAGKnowledgeBase() {
                     <span className="block truncate max-w-[280px] text-sm text-gray-300" title={row.resolution}>
                       {row.resolution ?? <span className="text-gray-600 text-xs">—</span>}
                     </span>
-                  </td>
-                  <td className="px-4 py-2.5">
-                    <ScoreBadge value={row.combined_score} />
                   </td>
                   <td className="px-4 py-2.5 text-right">
                     <span className="opacity-0 group-hover:opacity-100 text-gray-500 transition-opacity">

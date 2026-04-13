@@ -5,6 +5,17 @@ Format: `[commit-hash] — date — summary`, followed by details.
 
 ---
 
+## [pending] — 2026-04-13 — feat: add Feature 4 - Suggested Response Viewer panel
+
+### Added
+- `src/components/SuggestedResponsePanel.jsx` — slide-in side panel that fetches `ticket_suggestions` by `ticket_id` from Supabase; shows `suggested_response` with copy-to-clipboard button; shows `internal_notes` in a collapsible section; handles loading, error, and empty ("no suggestion generated") states
+- `SuggestionIcon` helper in `src/components/TicketTable.jsx` — lightbulb SVG icon for the new action button
+
+### Modified
+- `src/components/TicketTable.jsx` — imports `SuggestedResponsePanel`; adds `suggestionTicket` state; adds suggestion button (indigo, lightbulb icon) in actions column; renders `<SuggestedResponsePanel>` panel; all three panel open-handlers mutually close each other
+
+---
+
 ## [c3502c2] — 2026-04-11 — Initial commit
 
 - Added `README.md` (empty scaffold)
@@ -97,7 +108,7 @@ Format: `[commit-hash] — date — summary`, followed by details.
 
 ---
 
-## [pending] — 2026-04-13 — Fix CORS on n8n webhook calls via Vite dev proxy
+## [531d147] — 2026-04-13 — Fix CORS on n8n webhook calls via Vite dev proxy
 
 ### Problem
 `ThreadUpdatePanel` hit a CORS preflight failure when POSTing directly to the ngrok URL. The n8n `dashboard-update` webhook does not return `Access-Control-Allow-Origin` headers, so the browser blocked the OPTIONS preflight request.

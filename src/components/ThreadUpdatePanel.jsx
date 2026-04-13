@@ -5,6 +5,12 @@ import CategoryBadge from './CategoryBadge'
 const THREAD_WEBHOOK_URL = import.meta.env.VITE_N8N_THREAD_WEBHOOK_URL || ''
 const SLACK_CHANNEL = import.meta.env.VITE_SLACK_CHANNEL_ID || 'C0APTM3L9RS'
 
+// Use only the pathname for the fetch so the Vite dev proxy handles the origin.
+// This avoids browser CORS preflight failures against the ngrok URL.
+function webhookPath(fullUrl) {
+  try { return new URL(fullUrl).pathname } catch { return fullUrl }
+}
+
 const STATUS_OPTIONS = ['Open', 'In Progress', 'Resolved', 'Escalated']
 const UPDATE_TYPE_OPTIONS = [
   { value: 'status_update',  label: 'Status Update' },
@@ -146,10 +152,10 @@ export default function ThreadUpdatePanel({ ticket, onClose }) {
     const timer = setTimeout(() => controller.abort(), 20000)
 
     try {
-      const res = await fetch(THREAD_WEBHOOK_URL, {
+      const res = await fetch(webhookPath(THREAD_WEBHOOK_URL), {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json; charset=utf-8',
           'ngrok-skip-browser-warning': 'true',
         },
         body: JSON.stringify(payload),

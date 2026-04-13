@@ -6,6 +6,11 @@ import CategoryBadge from './CategoryBadge'
 const WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL || ''
 const SLACK_CHANNEL = import.meta.env.VITE_SLACK_CHANNEL_ID || 'C0APTM3L9RS'
 
+// Use only the pathname so the Vite dev proxy routes the request — avoids CORS.
+function webhookPath(fullUrl) {
+  try { return new URL(fullUrl).pathname } catch { return fullUrl }
+}
+
 const POLL_INTERVAL_MS = 3000
 const POLL_TIMEOUT_MS  = 5 * 60 * 1000  // 5 minutes — pipeline requires human Slack approval
 const WEBHOOK_SEND_TIMEOUT_MS = 10000   // abort fetch after 10s, treat as "sent"
@@ -241,7 +246,7 @@ export default function SubmitTicket() {
     const abortTimer = setTimeout(() => abortRef.current.abort(), WEBHOOK_SEND_TIMEOUT_MS)
 
     try {
-      const res = await fetch(WEBHOOK_URL, {
+      const res = await fetch(webhookPath(WEBHOOK_URL), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

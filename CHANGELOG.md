@@ -97,7 +97,27 @@ Format: `[commit-hash] — date — summary`, followed by details.
 
 ---
 
-## [pending] — 2026-04-13 — Feature 3: Thread Update Panel
+## [pending] — 2026-04-13 — Fix CORS on n8n webhook calls via Vite dev proxy
+
+### Problem
+`ThreadUpdatePanel` hit a CORS preflight failure when POSTing directly to the ngrok URL. The n8n `dashboard-update` webhook does not return `Access-Control-Allow-Origin` headers, so the browser blocked the OPTIONS preflight request.
+
+### Fix
+- `vite.config.js` — switched to `defineConfig(({ mode }) => ...)` factory form; added `server.proxy` that routes all `/webhook/*` requests to the ngrok origin (extracted from `VITE_N8N_WEBHOOK_URL` at dev-server start via `loadEnv`). Falls back to `http://localhost:5678` if env var is missing or placeholder. The proxy runs server-to-server so the browser sees only same-origin requests — no CORS.
+- `src/components/ThreadUpdatePanel.jsx` — added `webhookPath()` helper that strips the origin from the full env var URL, leaving just the pathname (e.g. `/webhook/dashboard-update`); fetch now uses this path. Also set `Content-Type: application/json; charset=utf-8` to silence n8n's `missing_charset` warning.
+- `src/components/SubmitTicket.jsx` — same `webhookPath()` helper and path-only fetch applied for consistency (pre-emptive fix).
+
+### n8n changes (context, not dashboard code)
+- Created new workflow copying the Slack update handler with path `/webhook/dashboard-update`
+- Removed Slack-interactive-component assumptions; added validation Code node to normalize payload and require `ticket_id` (must be real Supabase UUID)
+- Fixed `Fetch Ticket Thread TS` and `Prepare Thread Reply` nodes; moved webhook response to end of flow
+- Verified end-to-end: Supabase PATCH succeeds, thread metadata fetched, Slack posts reply with `ok: true`
+
+Note: `VITE_N8N_THREAD_WEBHOOK_URL` must be updated in `.env` to use the new `/webhook/dashboard-update` path, and `npm run dev` restarted after any `.env` change.
+
+---
+
+## [7ec7826] — 2026-04-13 — Feature 3: Thread Update Panel
 
 ### Added
 - `src/components/ThreadUpdatePanel.jsx` — side panel for sending Slack thread updates per ticket:

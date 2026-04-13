@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import UrgencyBadge from './UrgencyBadge'
 import CategoryBadge from './CategoryBadge'
+import ThreadUpdatePanel from './ThreadUpdatePanel'
 
 const SLACK_CHANNEL = import.meta.env.VITE_SLACK_CHANNEL_ID || 'C0APTM3L9RS'
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
@@ -214,6 +215,14 @@ function DBIcon() {
   )
 }
 
+function SendUpdateIcon() {
+  return (
+    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+    </svg>
+  )
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 const DEFAULT_FILTERS = { category: '', urgency: '', decision: '', dateFrom: '', dateTo: '' }
 
@@ -225,6 +234,7 @@ export default function TicketTable() {
   const [page, setPage] = useState(0)
   const [totalCount, setTotalCount] = useState(0)
   const [selectedTicket, setSelectedTicket] = useState(null)
+  const [updateTicket, setUpdateTicket] = useState(null)
   const [sortDir, setSortDir] = useState('desc')
 
   const fetchTickets = useCallback(async () => {
@@ -388,7 +398,14 @@ export default function TicketTable() {
                         <DBIcon />
                       </a>
                       <button
-                        onClick={() => setSelectedTicket(ticket)}
+                        onClick={() => { setUpdateTicket(ticket); setSelectedTicket(null) }}
+                        title="Send thread update"
+                        className="p-1.5 rounded-md hover:bg-orange-500/20 text-gray-500 hover:text-orange-400 transition-colors"
+                      >
+                        <SendUpdateIcon />
+                      </button>
+                      <button
+                        onClick={() => { setSelectedTicket(ticket); setUpdateTicket(null) }}
                         title="View details"
                         className="p-1.5 rounded-md hover:bg-blue-500/20 text-gray-500 hover:text-blue-400 transition-colors"
                       >
@@ -430,9 +447,12 @@ export default function TicketTable() {
         </div>
       </div>
 
-      {/* side panel */}
+      {/* side panels */}
       {selectedTicket && (
         <DetailPanel ticket={selectedTicket} onClose={() => setSelectedTicket(null)} />
+      )}
+      {updateTicket && (
+        <ThreadUpdatePanel ticket={updateTicket} onClose={() => setUpdateTicket(null)} />
       )}
     </div>
   )

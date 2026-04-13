@@ -97,6 +97,30 @@ Format: `[commit-hash] — date — summary`, followed by details.
 
 ---
 
+## [pending] — 2026-04-13 — Feature 3: Thread Update Panel
+
+### Added
+- `src/components/ThreadUpdatePanel.jsx` — side panel for sending Slack thread updates per ticket:
+  - Ticket context strip at top: urgency/category badges, current status, email
+  - Form fields: Update Type dropdown (Status Update / Assignment / Custom Reply / Full Update), Status dropdown (Open/In Progress/Resolved/Escalated), Assign To text input, ETA free-text input, Custom Message textarea
+  - POSTs to `VITE_N8N_THREAD_WEBHOOK_URL` with `{ ticket_id, slack_thread_ts, update_type, assigned_to, eta, status, custom_message }` and `ngrok-skip-browser-warning` header
+  - 20s `AbortController` timeout — treats timeout as error (unlike classifier, no sendAndWait blocking)
+  - Validates at least one field is filled before submitting
+  - Success card: summarises what was sent, link to Slack thread, "Send another update" reset
+  - Error state: specific messages for timeout, network failure, non-2xx response
+  - Warning banner if `VITE_N8N_THREAD_WEBHOOK_URL` is unconfigured
+  - Warning if ticket has no `slack_thread_ts` / `thread_ts`
+
+### Modified
+- `src/components/TicketTable.jsx` — wired in ThreadUpdatePanel:
+  - Imported `ThreadUpdatePanel`
+  - Added `updateTicket` state alongside existing `selectedTicket`
+  - Added "Send thread update" action button (orange/send icon) per row, opens ThreadUpdatePanel and closes DetailPanel
+  - Opening DetailPanel closes ThreadUpdatePanel and vice versa
+  - Added `SendUpdateIcon` SVG helper
+
+---
+
 ## [efd2d86] — 2026-04-11 — Backfill CHANGELOG entries + document commit workflow rule in CLAUDE.md
 
 ### Modified

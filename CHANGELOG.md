@@ -5,7 +5,17 @@ Format: `[commit-hash] — date — summary`, followed by details.
 
 ---
 
-## [pending] — 2026-04-13 — feat: add Feature 5 - Analytics dashboard
+## [pending] — 2026-04-13 — feat: add Feature 6 - RAG Knowledge Base viewer
+
+### Added
+- `src/components/RAGKnowledgeBase.jsx` — read-only viewer for `resolved_tickets` table (embedding excluded); columns: subject, category, urgency, resolution, combined_score; `ScoreBadge` colors score green ≥ 0.5, yellow ≥ 0.1, gray < 0.1; subject search (debounced 350ms); sort toggle between combined_score and created_at; pagination (25/page); row detail modal showing full message + all fields; entry count displayed in header
+
+### Modified
+- `src/App.jsx` — imports `RAGKnowledgeBase`; removes `soon: true` from the `rag` nav item; renders `<RAGKnowledgeBase />` for the `rag` tab; removes the old "Coming soon" fallback div
+
+---
+
+## [432f676] — 2026-04-13 — feat: add Feature 5 - Analytics dashboard
 
 ### Added
 - `src/components/Analytics.jsx` — full analytics page: 5 metric cards (total tickets, approval rate, rejection rate, RAG hit rate, avg similarity score); tickets by category bar chart with per-category colors; tickets by urgency horizontal bar chart; ticket volume over time line chart; all data fetched from `tickets` + `ticket_approvals` tables; loading/error/empty states per chart

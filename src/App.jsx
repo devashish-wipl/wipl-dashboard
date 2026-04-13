@@ -3,13 +3,14 @@ import TicketTable from './components/TicketTable'
 import DatabaseBrowser from './components/DatabaseBrowser'
 import SubmitTicket from './components/SubmitTicket'
 import Analytics from './components/Analytics'
+import RAGKnowledgeBase from './components/RAGKnowledgeBase'
 
 const NAV_ITEMS = [
   { id: 'tickets',  label: 'Tickets',        icon: TicketIcon },
   { id: 'submit',   label: 'Submit Ticket',   icon: PlusIcon },
   { id: 'database', label: 'Database',        icon: DatabaseIcon },
   { id: 'analytics',label: 'Analytics',       icon: ChartIcon },
-  { id: 'rag',      label: 'RAG Knowledge Base', icon: RAGIcon,  soon: true },
+  { id: 'rag',      label: 'RAG Knowledge Base', icon: RAGIcon },
 ]
 
 export default function App() {
@@ -90,11 +91,7 @@ export default function App() {
           {activeTab === 'submit'    && <SubmitTicket />}
           {activeTab === 'database'  && <DatabaseBrowser />}
           {activeTab === 'analytics' && <Analytics />}
-          {activeTab !== 'tickets' && activeTab !== 'submit' && activeTab !== 'database' && activeTab !== 'analytics' && (
-            <div className="flex items-center justify-center h-full text-gray-600 text-sm">
-              Coming soon
-            </div>
-          )}
+          {activeTab === 'rag'       && <RAGKnowledgeBase />}
         </div>
       </main>
     </div>

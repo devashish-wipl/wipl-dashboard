@@ -5,7 +5,14 @@ Format: `[commit-hash] — date — summary`, followed by details.
 
 ---
 
-## [pending] — 2026-04-14 — feat: integrate Sentry error tracking
+## [pending] — 2026-04-14 — chore: remove Sentry test button
+
+### Modified
+- `src/App.jsx` — removed temporary "Break the world" test button from header; Sentry SDK integration in `main.jsx` remains active
+
+---
+
+## [78f90c2] — 2026-04-14 — feat: integrate Sentry error tracking
 
 ### Added
 - `src/main.jsx` — Sentry initialized with `@sentry/react`; includes `browserTracingIntegration` and `replayIntegration`; DSN sourced from `VITE_SENTRY_DSN` env var

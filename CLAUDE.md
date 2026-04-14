@@ -52,6 +52,7 @@ All variables live in `.env` (gitignored). Copy `.env.example` to get started.
 | `VITE_N8N_WEBHOOK_URL` | Full ngrok URL for the RAG classifier webhook — changes every ngrok restart on the free plan |
 | `VITE_N8N_THREAD_WEBHOOK_URL` | Full ngrok URL for the thread update webhook — same ngrok session, different path |
 | `VITE_SLACK_CHANNEL_ID` | `C0APTM3L9RS` — used to construct Slack thread deep-link URLs |
+| `VITE_SENTRY_DSN` | Sentry DSN for error tracking — project `wipl-dashboard` in org `devashish` (de.sentry.io) |
 
 **Important:** `VITE_N8N_WEBHOOK_URL` and `VITE_N8N_THREAD_WEBHOOK_URL` use a free ngrok account. The subdomain changes on every `ngrok` restart. Update both values in `.env` and restart `npm run dev` when the URL changes. The app shows a warning banner if the webhook URL still contains the placeholder string `your-ngrok-url`.
 

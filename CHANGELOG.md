@@ -5,7 +5,20 @@ Format: `[commit-hash] — date — summary`, followed by details.
 
 ---
 
-## [pending] — 2026-04-13 — docs: update CLAUDE.md to reflect bf0fa16 changes
+## [pending] — 2026-04-14 — feat: integrate Sentry error tracking
+
+### Added
+- `src/main.jsx` — Sentry initialized with `@sentry/react`; includes `browserTracingIntegration` and `replayIntegration`; DSN sourced from `VITE_SENTRY_DSN` env var
+- `.env` — `VITE_SENTRY_DSN` added with the real DSN for org `devashish`, project `wipl-dashboard` (de.sentry.io)
+- `.env.example` — `VITE_SENTRY_DSN` placeholder added
+- `CLAUDE.md` — documented `VITE_SENTRY_DSN` in the Environment Variables table
+
+### Installed
+- `@sentry/react` — Sentry React SDK
+
+---
+
+## [92afd51] — 2026-04-13 — docs: update CLAUDE.md to reflect bf0fa16 changes
 
 ### Modified
 - `CLAUDE.md` — Feature 1 description updated: added search and decision-filter workaround notes; Database Browser tab count updated to 4 (groq_errors added); App.jsx file comment updated to mention real health check; Decision field gap pattern updated to describe the pre-fetch workaround; Known Issues row updated to match

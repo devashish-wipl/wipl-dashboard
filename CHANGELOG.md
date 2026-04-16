@@ -5,7 +5,7 @@ Format: `[commit-hash] — date — summary`, followed by details.
 
 ---
 
-## [pending] — 2026-04-16 — chore: add Routine config and update gitignore
+## [3101f54] — 2026-04-16 — chore: add Routine config and update gitignore
 
 ### Added
 - `.claude/routine-config.json` — webhook URL config read by the PR auto-merge Routine at runtime; update `slack_pr_webhook` value when ngrok restarts

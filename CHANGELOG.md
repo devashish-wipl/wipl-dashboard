@@ -5,7 +5,14 @@ Format: `[commit-hash] — date — summary`, followed by details.
 
 ---
 
-## [pending] — 2026-04-14 — chore: remove Sentry test button
+## [pending] — 2026-04-16 — ci: add GitHub Actions build check workflow
+
+### Added
+- `.github/workflows/ci.yml` — runs `npm ci` + `npm run build` on every PR targeting `main`; required by the nightly Routine for CI-gated merges
+
+---
+
+## [39b584d] — 2026-04-14 — chore: remove Sentry test button
 
 ### Modified
 - `src/App.jsx` — removed temporary "Break the world" test button from header; Sentry SDK integration in `main.jsx` remains active

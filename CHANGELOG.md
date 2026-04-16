@@ -5,7 +5,16 @@ Format: `[commit-hash] — date — summary`, followed by details.
 
 ---
 
-## [pending] — 2026-04-16 — ci: add GitHub Actions build check workflow
+## [pending] — 2026-04-16 — chore: add Routine config and update gitignore
+
+### Added
+- `.claude/routine-config.json` — webhook URL config read by the PR auto-merge Routine at runtime; update `slack_pr_webhook` value when ngrok restarts
+### Modified
+- `.gitignore` — exclude local n8n workflow JSON exports and `.claude/settings.local.json` from repo
+
+---
+
+## [02bc2ff] — 2026-04-16 — ci: add GitHub Actions build check workflow
 
 ### Added
 - `.github/workflows/ci.yml` — runs `npm ci` + `npm run build` on every PR targeting `main`; required by the nightly Routine for CI-gated merges

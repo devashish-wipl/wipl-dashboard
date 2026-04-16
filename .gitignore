@@ -35,3 +35,11 @@ lerna-debug.log*
 
 # Local test / coverage
 coverage/
+
+# Local n8n workflow exports (imported into n8n, not needed in repo)
+*.json.bak
+WIPL PR Notifications.json
+WIPL KB RAG Ingest.json
+
+# Claude Code local settings
+.claude/settings.local.json
